@@ -1,0 +1,5 @@
+[LOGGING]
+# The type of string formatting that logging methods do. `old` means using %
+# formatting, `new` is for `{}` formatting.
+logging-format-style=new
+disable=logging-fstring-interpolation

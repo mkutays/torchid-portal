@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Django Run Server",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/source/manage.py",
+            "args": [
+                "runserver",
+                "0.0.0.0:5000"
+            ],
+            "django": true
+        },
+        {
+            "name": "Django Script",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/source/manage.py",
+            "args": [
+                "runscript",
+                "main"
+            ],
+            "django": true
+        }
+    ]
+}

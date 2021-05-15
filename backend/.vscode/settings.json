@@ -1,0 +1,13 @@
+{
+    "python.pythonPath": ".venv/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": [
+        "--rcfile=${workspaceFolder}/.pylintrc",
+        "--load-plugins=pylint_django",
+        "--django-settings-module=app.settings",
+    ],
+    "python.analysis.extraPaths": [
+        "source"
+    ]
+}
