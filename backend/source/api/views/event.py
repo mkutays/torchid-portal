@@ -8,8 +8,10 @@ from ..serializers import EventSerializer
 class EventList(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    filterset_fields = ["name"]
-    search_fields = ["name"]
+    filterset_fields = ["name", "date"]
+    search_fields = ["name", "date"]
+    ordering_fields = ["name", "date"]
+
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()

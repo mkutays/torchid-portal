@@ -24,7 +24,7 @@ class COMPort(metaclass=Singleton):
         return port_list
 
     def __init__(self):
-        self.__auto = True
+        self.__auto = False
         self.__com_port = None
         self.__listener = None
         self.__worker = None
@@ -52,6 +52,7 @@ class COMPort(metaclass=Singleton):
 
     def stop(self):
         self.__alive = False
+        self.__com_port = None
 
     def listen(self):
         if not (self.__listener and self.__listener.is_alive()):

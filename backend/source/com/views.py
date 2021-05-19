@@ -31,10 +31,23 @@ def com_set(request):
     return Response(response, status=status_code)
 
 
-def com_disconnect():
-    pass
+@api_view(["POST"])
+def com_disconnect(request):
+
+    if COMPort().is_alive():
+        COMPort().stop()
+        msgs = [
+            "Your request has been recieved. Connection will be shutdown gracefully."]
+        status_code = status.HTTP_202_ACCEPTED
+    else:
+        msgs = ["Connection already has been closed."]
+        status_code = status.HTTP_200_OK
+
+    response = {"messages": msgs}
+    return Response(response, status=status_code)
 
 
 @api_view(["GET"])
-def com_status():
-    pass
+def com_status(request):
+    response = {"status": COMPort().is_alive(), "port": COMPort().com_port}
+    return Response(response)
