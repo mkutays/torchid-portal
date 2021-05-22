@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 class COMPort(metaclass=Singleton):
 
     @staticmethod
-    def auto_detect() -> str:
+    def auto_detect(port="CP2102") -> str:
         com_list = COMPort.list_all()
         com_dict = next(
-            (com_dict for com_dict in com_list if "CP2102" in str(com_dict.values())), None)
+            (com_dict for com_dict in com_list if port in str(com_dict.values())), None)
         com_port = com_dict["name"] if com_dict else None
         return com_port
 
@@ -29,9 +29,9 @@ class COMPort(metaclass=Singleton):
 
     def __init__(self):
         self.__com_port = None
+        self.__stop_cond = False
         self.__listener = None
         self.__worker = None
-        self.__alive = False
         self.__queue = None
 
     @property
@@ -46,7 +46,7 @@ class COMPort(metaclass=Singleton):
         return bool(self.__listener and self.__listener.is_alive())
 
     def stop(self):
-        self.__alive = False
+        self.__stop_cond = False
         self.__com_port = None
 
     def listen(self):
@@ -61,9 +61,9 @@ class COMPort(metaclass=Singleton):
 
     def __run_listener(self):
         logger.info("[LISTENER]: Launched!")
-        self.com_port = self.com_port if self.com_port else COMPort.auto_detect()
-        self.__alive = bool(self.com_port)
-        while self.__alive:
+        self.com_port = COMPort.auto_detect()
+        self.__stop_cond = bool(self.com_port)
+        while self.__stop_cond:
             data = random.randint(1, 10)
             time.sleep(data)
             self.__queue.put(f"data-{data}")
