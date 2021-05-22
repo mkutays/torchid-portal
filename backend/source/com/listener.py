@@ -15,7 +15,11 @@ class COMPort(metaclass=Singleton):
 
     @staticmethod
     def auto_detect() -> str:
-        pass
+        com_list = COMPort.list_all()
+        com_dict = next(
+            (com_dict for com_dict in com_list if "CP2102" in str(com_dict.values())), None)
+        com_port = com_dict["name"] if com_dict else None
+        return com_port
 
     @staticmethod
     def list_all() -> list:
@@ -24,20 +28,11 @@ class COMPort(metaclass=Singleton):
         return port_list
 
     def __init__(self):
-        self.__auto = False
         self.__com_port = None
         self.__listener = None
         self.__worker = None
         self.__alive = False
         self.__queue = None
-
-    @property
-    def auto(self) -> bool:
-        return self.__auto
-
-    @auto.setter
-    def auto(self, val: bool):
-        self.__auto = val
 
     @property
     def com_port(self) -> str:
