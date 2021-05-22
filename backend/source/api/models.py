@@ -32,11 +32,19 @@ class Event(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def delete(self, *args, **kwargs):
+    def check_has_records(self):
         record_count = Record.objects.filter(
             athlete__category__event=self).count()
         if record_count:
-            return NotAcceptable("Bu etkinliğe ait kayıtlar var silemezsin!")
+            raise NotAcceptable("Bu etkinliğe ait kayıtlar var!")
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.check_has_records()
+        super(Event, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.check_has_records()
         super(Event, self).delete(*args, **kwargs)
 
     class Meta:
@@ -51,13 +59,21 @@ class Category(models.Model):
     control_points = models.JSONField(
         default=list, validators=[validate_control_points], verbose_name="Kontrol Noktaları")
 
+    def check_has_records(self):
+        record_count = Record.objects.filter(athlete__category=self).count()
+        if record_count:
+            raise NotAcceptable("Bu kategoriye ait kayıtlar var!")
+
     def __str__(self) -> str:
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.check_has_records()
+        super(Category, self).save(*args, **kwargs)
+
     def delete(self, *args, **kwargs):
-        record_count = Record.objects.filter(athlete__category=self).count()
-        if record_count:
-            raise NotAcceptable("Bu kategoriye ait kayıtlar var silemezsin!")
+        self.check_has_records()
         super(Category, self).delete(*args, **kwargs)
 
     class Meta:
@@ -76,10 +92,18 @@ class Athlete(models.Model):
     def __str__(self) -> str:
         return self.name if self.name else self.card_id
 
-    def delete(self, *args, **kwargs):
+    def check_has_records(self):
         record_count = Record.objects.filter(athlete=self).count()
         if record_count:
-            raise NotAcceptable("Bu sporcuya ait kayıtlar var silemezsin!")
+            raise NotAcceptable("Bu sporcuya ait kayıtlar var!")
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.check_has_records()
+        super(Athlete, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.check_has_records()
         super(Athlete, self).delete(*args, **kwargs)
 
     class Meta:

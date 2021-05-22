@@ -1,9 +1,17 @@
 from rest_framework import serializers
 
+from .models import ControlPoint
 from .models import Event
 from .models import Category
 from .models import Athlete
 from .models import Record
+
+
+class ControlPointSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ControlPoint
+        fields = ["id", "name"]
 
 
 class EventSerializer(serializers.ModelSerializer):

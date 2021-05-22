@@ -8,9 +8,9 @@ from ..serializers import RecordSerializer
 class RecordList(generics.ListCreateAPIView):
     queryset = Record.objects.all()
     serializer_class = RecordSerializer
-    filterset_fields = ["event", "event__name", "athlete", "athlete__name"]
-    search_fields = ["event__name", "athlete__name"]
-    ordering_fields = ["event", "event__name", "athlete", "athlete__name"]
+    filterset_fields = ["athlete", "athlete__name", "athlete__category"]
+    search_fields = ["athlete__name"]
+    ordering_fields = ["athlete", "athlete__name"]
 
 
 class RecordDetail(generics.RetrieveUpdateDestroyAPIView):

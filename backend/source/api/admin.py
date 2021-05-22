@@ -1,9 +1,9 @@
 from django.contrib import admin
+from .models import ControlPoint
 from .models import Event
 from .models import Record
 from .models import Athlete
 from .models import Category
-from .models import ControlPoint
 
 
 @admin.register(ControlPoint)

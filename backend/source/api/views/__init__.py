@@ -1,4 +1,7 @@
 
+from .control_point import ControlPointList
+from .control_point import ControlPointDetail
+
 from .event import EventList
 from .event import EventDetail
 
