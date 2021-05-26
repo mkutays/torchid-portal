@@ -1,5 +1,15 @@
 from com.listener import COMPort
+from com.readers import MessageReader
 
+import time
 
 def run():
-    com_port = COMPort.auto_detect()
+
+    COMPort().start()
+    time.sleep(2000)
+
+
+
+# 01,0000007,06,32,35,38,34,37,40,1046218,1048563,1055475,1103067,1112579,1145096*65\n
+# 01,04,32,35,38,34,1046218,1048563,1055475,1103067*8E\n
+# 01,07,32,35,38,34,37,40,41,1046218,1048563,1055475,1103067,1112579,1145096,1158391*0C\n

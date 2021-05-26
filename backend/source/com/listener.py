@@ -1,20 +1,21 @@
 import time
-import random
-import logging
 from threading import Thread
 from queue import Queue
 
 import serial.tools.list_ports
+from serial import Serial
 
+from constants import LOGGER
 from utils.singleton import Singleton
 
-logger = logging.getLogger(__name__)
+from .readers import MessageReader
 
 
 class COMPort(metaclass=Singleton):
 
     @staticmethod
-    def auto_detect(port="CP2102") -> str:
+    def auto_detect(port="CP210") -> str:
+        return "COM2"
         com_list = COMPort.list_all()
         com_dict = next(
             (com_dict for com_dict in com_list if port in str(com_dict.values())), None)
@@ -33,6 +34,11 @@ class COMPort(metaclass=Singleton):
         self.__listener = None
         self.__worker = None
         self.__queue = None
+        self.__conn = None
+
+    def __create_connection(self):
+        if self.com_port:
+            self.__conn = Serial(self.com_port, 38400, timeout=0)
 
     @property
     def com_port(self) -> str:
@@ -49,7 +55,7 @@ class COMPort(metaclass=Singleton):
         self.__stop_cond = False
         self.__com_port = None
 
-    def listen(self):
+    def start(self):
         if not (self.__listener and self.__listener.is_alive()):
             self.__queue = Queue()
             self.__listener = Thread(
@@ -60,20 +66,27 @@ class COMPort(metaclass=Singleton):
             self.__worker.start()
 
     def __run_listener(self):
-        logger.info("[LISTENER]: Launched!")
+        LOGGER.info("[LISTENER] Launched!")
         self.com_port = COMPort.auto_detect()
         self.__stop_cond = bool(self.com_port)
+        self.__create_connection()
         while self.__stop_cond:
-            data = random.randint(1, 10)
-            time.sleep(data)
-            self.__queue.put(f"data-{data}")
-            logger.info(f"[LISTENER]: data-{data} recieved!")
-        logger.info("[LISTENER]: Killed!")
+            data = self.__conn.readline()
+            if len(data):
+                data = data.decode("utf-8").strip()
+                self.__queue.put(data)
+                LOGGER.info(f"[LISTENER] Data: [{data}] recieved!")
+            time.sleep(0.5)
+        LOGGER.info("[LISTENER] Killed!")
         self.__queue.put("kill")
 
     def __run_worker(self):
+        LOGGER.info("[WORKER] Launched!")
         while (data := self.__queue.get()) != "kill":
-            time.sleep(0.5)
-            print(f"WORKER: {data} processed\n")
-
-        print("WORKER: killed\n")
+            try:
+                MessageReader.load(data)
+                LOGGER.info(f"[WORKER] [{data}] successfully processed!")
+            except Exception as exp:
+                LOGGER.error("[WORKER] Data processing operation failed!")
+                LOGGER.error(f"[WORKER] {exp}")
+        LOGGER.info("[WORKER] Killed\n")

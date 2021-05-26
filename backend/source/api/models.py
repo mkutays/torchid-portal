@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from jsonfield import JSONField
 from rest_framework.exceptions import NotAcceptable
 
 
@@ -56,7 +56,7 @@ class Category(models.Model):
     event = models.ForeignKey(
         Event, on_delete=models.CASCADE, verbose_name="Etkinlik")
     name = models.CharField(max_length=100, verbose_name="Kategori Adı")
-    control_points = models.JSONField(
+    control_points = JSONField(
         default=list, validators=[validate_control_points], verbose_name="Kontrol Noktaları")
 
     def check_has_records(self):
@@ -114,8 +114,8 @@ class Athlete(models.Model):
 
 class Record(models.Model):
     athlete = models.OneToOneField(
-        Athlete, on_delete=models.CASCADE, verbose_name="Sporcu")
-    results = models.JSONField(default=list, verbose_name="Sonuçlar")
+        Athlete, on_delete=models.CASCADE, verbose_name="Sporcu", unique=True)
+    results = JSONField(default=list, verbose_name="Sonuçlar")
 
     def __str__(self) -> str:
         return f"{self.athlete.name} -> {self.athlete.category.event.name} - {self.athlete.category.name}"
